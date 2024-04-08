@@ -7,21 +7,21 @@ import {GroupContactsDto} from 'src/types/dto/GroupContactsDto';
 import {GroupContactsCard} from 'src/components/GroupContactsCard';
 import {Empty} from 'src/components/Empty';
 import {ContactCard} from 'src/components/ContactCard';
+import { useAppSelector } from 'src/redux/hooks';
 
-export const GroupPage = memo<CommonPageProps>(({
-  contactsState,
-  groupContactsState
-}) => {
+export const GroupPage = () => {
+  const contactsState = useAppSelector(state => state.contacts)
+  const groupContactsState = useAppSelector(state => state.groupContacts)  
   const {groupId} = useParams<{ groupId: string }>();
   const [contacts, setContacts] = useState<ContactDto[]>([]);
   const [groupContacts, setGroupContacts] = useState<GroupContactsDto>();
 
   useEffect(() => {
-    const findGroup = groupContactsState[0].find(({id}) => id === groupId);
+    const findGroup = groupContactsState.find(({id}) => id === groupId);
     setGroupContacts(findGroup);
     setContacts(() => {
       if (findGroup) {
-        return contactsState[0].filter(({id}) => findGroup.contactIds.includes(id))
+        return contactsState.filter(({id}) => findGroup.contactIds.includes(id))
       }
       return [];
     });
@@ -51,4 +51,4 @@ export const GroupPage = memo<CommonPageProps>(({
       ) : <Empty />}
     </Row>
   );
-});
+};
