@@ -1,18 +1,34 @@
-import React, {memo, useState} from 'react';
-import {CommonPageProps} from './types';
+import { useEffect, useState} from 'react';
 import {Col, Row} from 'react-bootstrap';
 import {ContactCard} from 'src/components/ContactCard';
 import {FilterForm, FilterFormValues} from 'src/components/FilterForm';
 import {ContactDto} from 'src/types/dto/ContactDto';
-import { useAppSelector } from 'src/redux/hooks';
+import { useGetContactQuery } from 'src/redux/contacts';
+import { useGetGroupsQuery } from 'src/redux/group';
+import { GroupContactsDto } from 'src/types/dto/GroupContactsDto';
 
 
 export const ContactListPage = () => {
-  const contactsState = useAppSelector(state => state.contacts)
-  const groupContactsState = useAppSelector(state => state.groupContacts) 
-  const [contacts, setContacts] = useState<ContactDto[]>(contactsState)
+  const contactsState = useGetContactQuery();
+  const groupContactsState = useGetGroupsQuery();
+  const [groupContactsData, setGroupContactsData] = useState<GroupContactsDto[]>(groupContactsState.data ? groupContactsState.data : [])
+  const [contactsData, setContactsData] = useState<ContactDto[]>(contactsState.data ? contactsState.data : [])
+
+  useEffect(() => { 
+    if (groupContactsState.data !== undefined) {
+      setGroupContactsData(groupContactsState.data)
+    }
+  }, [groupContactsState.data])
+
+  useEffect(() => { 
+    if (contactsState.data !== undefined) {
+      setContactsData(contactsState.data)
+    }
+  }, [contactsState.data])
+
+
   const onSubmit = (fv: Partial<FilterFormValues>) => {
-    let findContacts: ContactDto[] = contactsState;
+    let findContacts: ContactDto[] = contactsState.data? contactsState.data : [] ;
 
     if (fv.name) {
       const fvName = fv.name.toLowerCase();
@@ -22,26 +38,26 @@ export const ContactListPage = () => {
     }
 
     if (fv.groupId) {
-      const groupContacts = groupContactsState.find(({id}) => id === fv.groupId);
+      const groupFindContacts = groupContactsData.find(({id}) => id === fv.groupId);
 
-      if (groupContacts) {
+      if (groupFindContacts) {
         findContacts = findContacts.filter(({id}) => (
-          groupContacts.contactIds.includes(id)
+          groupFindContacts.contactIds.includes(id)
         ))
       }
     }
 
-    setContacts(findContacts)
+    setContactsData(findContacts)
   }
 
   return (
-    <Row xxl={1}>
+    <Row xxl={1} className='d-flex flex-column'>
       <Col className="mb-3">
-        <FilterForm groupContactsList={groupContactsState} initialValues={{}} onSubmit={onSubmit} />
+        <FilterForm groupContactsList={groupContactsData} initialValues={{}} onSubmit={onSubmit} />
       </Col>
       <Col>
         <Row xxl={4} className="g-4">
-          {contacts.map((contact) => (
+          {contactsData.map((contact) => (
             <Col key={contact.id}>
               <ContactCard contact={contact} withLink />
             </Col>
