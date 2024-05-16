@@ -6,30 +6,16 @@ import {GroupContactsDto} from 'src/types/dto/GroupContactsDto';
 import {GroupContactsCard} from 'src/components/GroupContactsCard';
 import {Empty} from 'src/components/Empty';
 import {ContactCard} from 'src/components/ContactCard';
-import { useGetContactQuery } from 'src/redux/contacts';
-import { useGetGroupsQuery } from 'src/redux/group';
+import { observer } from 'mobx-react-lite';
+import { groupsStore } from 'src/store/groupsStore';
+import { contactsStore } from 'src/store/contactsStore';
 
-export const GroupPage = memo(({
+export const GroupPage = observer(({
 }) => {
   const {groupId} = useParams<{ groupId: string }>();
-  const contactsState = useGetContactQuery();
-  const groupContactsState = useGetGroupsQuery();
-  const [groupContactsData, setGroupContactsData] = useState<GroupContactsDto[]>(groupContactsState.data ? groupContactsState.data : [])
-  const [contactsData, setContactsData] = useState<ContactDto[]>(contactsState.data ? contactsState.data : [])
+  const groupContactsData = groupsStore.groups
+  const [contactsData, setContactsData] = useState<ContactDto[]>(contactsStore.contacts)
   const [groupContacts, setGroupContacts] = useState<GroupContactsDto>();
-
-  useEffect(() => { 
-    if (groupContactsState.data !== undefined) {
-      setGroupContactsData(groupContactsState.data)
-    }
-  }, [groupContactsState.data])
-
-  useEffect(() => { 
-    if (contactsState.data !== undefined) {
-      setContactsData(contactsState.data)
-    }
-  }, [contactsState.data])
-
 
   useEffect(() => {
     const findGroup = groupContactsData.find(({id}) => id === groupId);

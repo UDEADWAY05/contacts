@@ -1,12 +1,12 @@
+import { observer } from 'mobx-react-lite';
 import {memo} from 'react';
 import {Col, Row} from 'react-bootstrap';
 import {GroupContactsCard} from 'src/components/GroupContactsCard';
-import { useGetGroupsQuery } from 'src/redux/group';
+import { groupsStore } from 'src/store/groupsStore';
 import { GroupContactsDto } from 'src/types/dto/GroupContactsDto';
 
-export const GroupListPage = memo(() => {
-  const groupContactsState = useGetGroupsQuery()
-  const groupContactsData: GroupContactsDto[] = groupContactsState.data ? groupContactsState.data : []
+export const GroupListPage = observer(() => {
+  const groupContactsData: GroupContactsDto[] = groupsStore.groups
   return (
     <Row xxl={4}>
       {groupContactsData.map((groupContacts) => (
