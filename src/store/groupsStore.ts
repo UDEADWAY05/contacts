@@ -10,7 +10,7 @@ export const groupsStore = makeAutoObservable({
     
     if (isSuccessResponse(result)) {
       groupsStore.groups = result.data;
-    }
+    };
     return result;
   }
 });

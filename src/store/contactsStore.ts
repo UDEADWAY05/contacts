@@ -11,7 +11,7 @@ export const contactsStore = makeAutoObservable({
     console.log('####result: ', result)
     if (isSuccessResponse(result)) {
       contactsStore.contacts = result.data;
-    }
+    };
     return result;
   }
 })
