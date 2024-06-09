@@ -1,14 +1,19 @@
+import { useEffect } from 'react';
 import './MainApp.scss';
 import { ThemeProvider } from 'react-bootstrap';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from 'src/components/Layout';
 import { ContactListPage, GroupPage, ContactPage, FavoritListPage, GroupListPage } from 'src/pages';
-import { Provider } from 'react-redux';
-import { store } from 'src/redux/store';
+import { contactsStore } from 'src/store/contactsStore';
+import { groupsStore } from 'src/store/groupsStore';
 
 export const MainApp = () => {
+      useEffect(() => {
+        contactsStore.get()
+        groupsStore.get()
+      }, [])
+
     return (
-      <Provider store={store}>
         <ThemeProvider
         breakpoints={['xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs']}
         minBreakpoint="xxs"
@@ -42,6 +47,5 @@ export const MainApp = () => {
             </Routes>
         </BrowserRouter>
         </ThemeProvider>
-    </Provider>
   );
 };
